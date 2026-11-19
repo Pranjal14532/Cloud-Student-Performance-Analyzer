@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+*.log
+backend/node_modules/
+frontend/node_modules/
+node_modules/
+.env
+.env.*
+!.env.example
+dist/
+*.pem
+*.key
+backend-deploy.tar.gz

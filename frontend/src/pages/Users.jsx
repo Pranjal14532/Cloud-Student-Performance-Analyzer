@@ -1,0 +1,9 @@
+import { useEffect,useState } from "react";
+import { api } from "../services/api";
+export default function Users(){
+  const [rows,setRows]=useState([]),[students,setStudents]=useState([]),[form,setForm]=useState({username:"",password:"",role:"admin",studentId:""});
+  const load=()=>api.get("/users").then(r=>setRows(r.data));useEffect(()=>{load();api.get("/students",{params:{limit:100}}).then(r=>setStudents(r.data.rows))},[]);
+  const submit=async e=>{e.preventDefault();await api.post("/users",{...form,studentId:form.studentId?Number(form.studentId):null});setForm({username:"",password:"",role:"admin",studentId:""});load()};
+  const remove=async id=>{if(confirm("Delete this user account?")){await api.delete(`/users/${id}`);load()}};
+  return <><div className="page-heading"><div><small>ACCESS</small><h1>User management</h1></div></div><form className="panel form-inline" onSubmit={submit}><input placeholder="Username" value={form.username} onChange={e=>setForm({...form,username:e.target.value})} required/><input type="password" minLength="8" placeholder="Password" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} required/><select value={form.role} onChange={e=>setForm({...form,role:e.target.value})}><option value="admin">Admin</option><option value="student">Student</option></select>{form.role==="student"&&<select value={form.studentId} onChange={e=>setForm({...form,studentId:e.target.value})} required><option value="">Linked student</option>{students.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select>}<button className="primary">Create account</button></form><div className="panel"><table><thead><tr><th>Username</th><th>Role</th><th>Student</th><th></th></tr></thead><tbody>{rows.map(r=><tr key={r.id}><td>{r.username}</td><td>{r.role}</td><td>{r.student_name||"—"}</td><td><button className="danger" onClick={()=>remove(r.id)}>Delete</button></td></tr>)}</tbody></table></div></>
+}

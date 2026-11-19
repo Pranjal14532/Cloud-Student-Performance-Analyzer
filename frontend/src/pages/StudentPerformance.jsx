@@ -1,0 +1,10 @@
+import { useEffect,useState } from "react";
+import { BarChart,Bar,XAxis,YAxis,Tooltip,ResponsiveContainer,LineChart,Line } from "recharts";
+import { api } from "../services/api";
+import { useAuth } from "../context/AuthContext";
+export default function StudentPerformance(){
+  const {user}=useAuth();const [data,setData]=useState(null),[student,setStudent]=useState(null);
+  useEffect(()=>{if(user?.studentId){api.get(`/students/${user.studentId}`).then(r=>{setStudent(r.data.student);setData(r.data.analytics)});}},[user]);
+  if(!data)return <div className="panel">Loading performance insights...</div>;
+  return <><div className="page-heading"><div><small>STUDENT PERFORMANCE</small><h1>Hello, {student?.name?.split(" ")[0]}</h1></div></div><div className="kpi-grid"><div className="kpi"><span>Overall</span><strong>{data.overall}%</strong></div><div className="kpi"><span>Class average</span><strong>{data.classAverage}%</strong></div><div className="kpi"><span>Strongest</span><strong>{data.strongestSubject||"—"}</strong></div><div className="kpi"><span>Needs focus</span><strong>{data.weakestSubject||"—"}</strong></div></div><div className="panel insight"><strong>{data.classification}</strong><p>{data.improvement>=0?"Improved":"Declined"} by {Math.abs(data.improvement)} percentage points between recent semesters. {data.weakestSubject?`Consider additional practice in ${data.weakestSubject}.`:"Keep building consistent study habits."}</p></div><div className="chart-grid"><div className="panel"><h2>Subject performance</h2><ResponsiveContainer width="100%" height={280}><BarChart data={data.subjectAverages}><XAxis dataKey="subject"/><YAxis domain={[0,100]}/><Tooltip/><Bar dataKey="average" fill="#8274e8"/></BarChart></ResponsiveContainer></div><div className="panel"><h2>Semester progress</h2><ResponsiveContainer width="100%" height={280}><LineChart data={data.semesterAverages}><XAxis dataKey="semester"/><YAxis domain={[0,100]}/><Tooltip/><Line dataKey="average" stroke="#68b89e" strokeWidth={3}/></LineChart></ResponsiveContainer></div></div></>
+}

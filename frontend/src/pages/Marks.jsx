@@ -1,0 +1,11 @@
+import { useEffect,useState } from "react";
+import { api } from "../services/api";
+import { useAuth } from "../context/AuthContext";
+export default function Marks(){
+  const {user}=useAuth();const [rows,setRows]=useState([]),[students,setStudents]=useState([]),[form,setForm]=useState({studentId:"",semester:"",subject:"",marks:"",maxMarks:"100"});
+  const load=()=>api.get("/marks").then(r=>setRows(r.data));useEffect(()=>{load();if(user.role==="admin")api.get("/students",{params:{limit:100}}).then(r=>setStudents(r.data.rows))},[user.role]);
+  const submit=async e=>{e.preventDefault();await api.post("/marks",{...form,studentId:Number(form.studentId),marks:Number(form.marks),maxMarks:Number(form.maxMarks)});setForm({studentId:"",semester:"",subject:"",marks:"",maxMarks:"100"});load()};
+  const remove=async id=>{if(confirm("Delete this mark record?")){await api.delete(`/marks/${id}`);load()}};
+  return <><div className="page-heading"><div><small>RESULTS</small><h1>Marks management</h1></div></div>{user.role==="admin"&&<form className="panel form-inline" onSubmit={submit}><select value={form.studentId} onChange={e=>setForm({...form,studentId:e.target.value})} required><option value="">Student</option>{students.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select><input placeholder="Subject" value={form.subject} onChange={e=>setForm({...form,subject:e.target.value})} required/><input placeholder="Semester" value={form.semester} onChange={e=>setForm({...form,semester:e.target.value})} required/><input type="number" min="0" step="0.01" placeholder="Marks" value={form.marks} onChange={e=>setForm({...form,marks:e.target.value})} required/><input type="number" min="0.01" step="0.01" value={form.maxMarks} onChange={e=>setForm({...form,maxMarks:e.target.value})} required/><button className="primary">Save result</button></form>}
+  <div className="panel"><div className="table-wrap"><table><thead><tr><th>Student</th><th>Subject</th><th>Semester</th><th>Score</th>{user.role==="admin"&&<th></th>}</tr></thead><tbody>{rows.map(r=><tr key={r.id}><td>{r.name}<small>{r.roll_no}</small></td><td>{r.subject}</td><td>{r.semester}</td><td>{r.marks}/{r.max_marks}</td>{user.role==="admin"&&<td><button className="danger" onClick={()=>remove(r.id)}>Delete</button></td>}</tr>)}</tbody></table></div></div></>
+}

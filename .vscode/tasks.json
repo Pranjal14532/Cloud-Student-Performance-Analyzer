@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Project: Install Node dependencies",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}\\setup.ps1"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Project: Run Express API",
+      "type": "npm",
+      "path": "${workspaceFolder}\\backend",
+      "script": "dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Project: Run React app",
+      "type": "npm",
+      "path": "${workspaceFolder}\\frontend",
+      "script": "dev",
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}
