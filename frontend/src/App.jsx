@@ -22,7 +22,7 @@ export default function App(){
   return <Routes>
     <Route path="/login" element={user?<Navigate to="/"/>:<Login/>}/>
     <Route element={<Protected><Layout/></Protected>}>
-      <Route path="/" element={<Dashboard/>}/>
+      <Route path="/" element={user?.role === "admin" ? <Dashboard/> : <StudentPerformance/>}/>
       <Route path="/students" element={<Protected admin><Students/></Protected>}/>
       <Route path="/users" element={<Protected admin><Users/></Protected>}/>
       <Route path="/marks" element={<Marks/>}/>
