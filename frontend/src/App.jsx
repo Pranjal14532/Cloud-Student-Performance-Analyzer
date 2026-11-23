@@ -29,7 +29,7 @@ export default function App(){
       <Route path="/import" element={<Protected admin><ImportData/></Protected>}/>
       <Route path="/reports" element={<Reports/>}/>
       <Route path="/performance" element={<StudentPerformance/>}/>
-      <Route path="/analytics" element={<StudentPerformance/>}/>
+      <Route path="/analytics" element={<Protected admin><Dashboard/></Protected>}/>      
       <Route path="/profile" element={<StudentPerformance/>}/>
     </Route>
     <Route path="*" element={<Navigate to="/" replace/>}/>
